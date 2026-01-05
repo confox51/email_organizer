@@ -2,6 +2,11 @@ import os
 import threading
 import logging
 from flask import Flask
+from dotenv import load_dotenv
+
+# Load env vars first
+load_dotenv()
+
 from gmail_listener import start_listening
 
 app = Flask(__name__)
