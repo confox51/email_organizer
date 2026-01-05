@@ -67,7 +67,7 @@ def start_listening():
             # Poll for unread in INBOX
             results = service.users().messages().list(
                 userId='me', 
-                q='label:INBOX is:unread', 
+                q='label:INBOX', 
                 maxResults=10
             ).execute()
             
