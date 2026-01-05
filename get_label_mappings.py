@@ -29,11 +29,11 @@ def get_credentials():
             token.write(creds.to_json())
     return creds
 
-def main():
-    """Fetches and prints Gmail label ID to Name mappings."""
+def fetch_label_mappings():
+    """Fetches Gmail label ID to Name mappings."""
     creds = get_credentials()
     if not creds:
-        return
+        return {}
 
     try:
         service = build('gmail', 'v1', credentials=creds)
@@ -42,23 +42,30 @@ def main():
 
         if not labels:
             print('No labels found.')
-            return
-        
-        print(f"{'Label ID':<40} | {'Label Name'}")
-        print("-" * 60)
-        
+            return {}
+
         mapping = {}
         for label in labels:
-            print(f"{label['id']:<40} | {label['name']}")
             mapping[label['id']] = label['name']
-
-        # Also save to a small json for reference if helpful
-        with open('label_mappings.json', 'w') as f:
-            json.dump(mapping, f, indent=2)
-        print("\nMapping saved to label_mappings.json")
+        
+        return mapping
 
     except Exception as e:
         print(f'An error occurred: {e}')
+        return {}
 
-if __name__ == '__main__':
-    main()
+def main():
+    """Fetches and prints Gmail label ID to Name mappings."""
+    mapping = fetch_label_mappings()
+    
+    if not mapping:
+        return
+
+    print(f"{'Label ID':<40} | {'Label Name'}")
+    print("-" * 60)
+    
+    for label_id, label_name in mapping.items():
+        print(f"{label_id:<40} | {label_name}")
+
+    # No longer saving to JSON file since we fetch dynamically now
+

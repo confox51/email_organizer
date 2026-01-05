@@ -4,6 +4,7 @@ import argparse
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from gmail_auth import get_service
+from get_label_mappings import fetch_label_mappings
 
 # Setup logging
 logging.basicConfig(
@@ -11,14 +12,19 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-def load_label_mappings(mapping_file='label_mappings.json'):
+def load_label_mappings():
+    """Fetches mappings and returns Name -> ID map."""
     try:
-        with open(mapping_file, 'r') as f:
-            label_map = json.load(f)
-            # Create reverse mapping: Name -> ID
-            return {v: k for k, v in label_map.items()}
-    except FileNotFoundError:
-        logging.error(f"{mapping_file} not found. Run get_label_mappings.py first.")
+        # fetch_label_mappings returns ID -> Name
+        # We need Name -> ID for applying labels
+        id_to_name = fetch_label_mappings()
+        if not id_to_name:
+            logging.error("Failed to fetch label mappings.")
+            return {}
+        
+        return {v: k for k, v in id_to_name.items()}
+    except Exception as e:
+        logging.error(f"Error loading label mappings: {e}")
         return {}
 
 def apply_label(service, email_id, category, name_to_id_map):
