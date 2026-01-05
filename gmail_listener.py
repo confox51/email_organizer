@@ -1,8 +1,10 @@
 import os
+import sys
 import time
 import base64
 import logging
 from typing import Dict, List, Set
+import google.auth.exceptions
 import gmail_auth
 import classify_emails_groq as classifier
 import db_client
@@ -43,16 +45,16 @@ def start_listening():
     
     service = gmail_auth.get_service()
     if not service:
-        logging.error("Failed to authorize.")
-        return
+        logging.error("Failed to authorize. Exiting application to trigger restart.")
+        os._exit(1) # Force exit so Render sees the failure
 
     # 1. Initialize Resources
     try:
         system_prompt = classifier.get_system_prompt(TAXONOMY_PATH)
         label_mappings = load_label_mappings()
     except Exception as e:
-        logging.error(f"Error loading resources: {e}")
-        return
+        logging.error(f"Error loading resources: {e}. Exiting.")
+        os._exit(1)
 
     # 2. Load History
     # Use Supabase for persistence
@@ -131,8 +133,12 @@ def start_listening():
             else:
                 pass
 
+        except google.auth.exceptions.RefreshError as e:
+            logging.error(f"Authentication token expired or revoked: {e}. Exiting to trigger re-auth flow.")
+            os._exit(1)
         except Exception as e:
-            logging.error(f"Error in poll loop: {e}")
+            logging.critical(f"Critical error in poll loop: {e}. Exiting.")
+            os._exit(1)
             
         time.sleep(POLL_INTERVAL_SECONDS)
 
