@@ -42,6 +42,10 @@ This document defines the mutually exclusive categories used for organizing emai
 *   **Description**: Local government notifications, school board updates, neighborhood associations, and community newsletters.
 *   **Examples**: Enroll Indy, Arlington County, Nextdoor.
 
-## 11. Personal & One-Offs
+## 11. Newsletters
+*   **Description**: Curated or aggregated content digests, typically sent on a regular schedule with multiple stories, articles, or links. These are informational emails the user subscribes to for industry news, research summaries, or technology trends.
+*   **Examples**: AlphaSignal, Contrary Research, MIT Technology Review, AINews (news@smol.ai), Substack newsletters.
+
+## 12. Personal & One-Offs
 *   **Description**: Direct correspondence from individuals that don't fall into the categories above.
 *   **Examples**: Personal Gmail contacts.
